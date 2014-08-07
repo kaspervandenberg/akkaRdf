@@ -13,9 +13,6 @@ import net.kaspervandenberg.akkaRdf.rdf.Rdf._;
  * `"Pattern"('G'|'_')('S'|'_')('P'|'_')('O|'_')`.  For each field there are 
  * two `traits`: `"Fixed"\${FieldName}` and `"Wildcard"\${FieldName}`.
  *
- * || ||||=Has `graph`? =||||=Has `subject`? =||||=Has `predicate`? =||||=Has `rdfObject`? =||
- * || || yes || no       || yes || no         || yes || no           || yes || no           ||
- *
  * == [[QuadruplePattern.Pattern Patterns]] versus 
  * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.BNode BNodes]] ==
  *
@@ -78,7 +75,7 @@ object QuadruplePattern {
 	}
 
 	/**
-	 * Factory method to create any of the 16 subclasses of `Pattern`.
+	 * Factory method to create any of the 16 subclasses of [[Pattern]].
 	 */
 	object Pattern {
 		/**
@@ -100,6 +97,15 @@ object QuadruplePattern {
 				}
 			}
 
+		/**
+		 * Create one of
+		 *  - [[PatternGSPO]], [[PatternGSP_]], [[PatternGS_O]],
+		 *    [[PatternGS__]]; or
+		 *  - [[PatternG_PO]], [[PatternG_P_]], [[PatternG__O]],
+		 *    [[PatternG___]].
+		 *
+		 * Depending on `s == Some[Resource]` or `s == None`
+		 */
 		private def createFixedGraph(
 					graph: NamedResource,
 					s: Option[Resource],
@@ -113,6 +119,15 @@ object QuadruplePattern {
 			}
 		}
 
+		/**
+		 * Create one of
+		 *  - [[Pattern_SPO]], [[Pattern_SP_]], [[Pattern_S_O]],
+		 *    [[Pattern_S__]]; or
+		 *  - [[Pattern__PO]], [[Pattern__P_]], [[Pattern___O]],
+		 *    [[Pattern____]].
+		 *
+		 * Depending on `s == Some[Resource]` or `s == None`
+		 */
 		private def createWildcardGraph(
 					s: Option[Resource],
 					p: Option[NamedResource],
@@ -125,6 +140,13 @@ object QuadruplePattern {
 			}
 		}
 
+		/**
+		 * Create one of
+		 *  - [[PatternGSPO]], [[PatternGSP_]]; or
+		 *  - [[PatternGS_O]], [[PatternGS__]].
+		 *
+		 * Depending on `p == Some[NamedResource]` or `p == None`
+		 */
 		private def createFixedSubjectG(
 					graph: NamedResource,
 					subject: Resource,
@@ -138,6 +160,13 @@ object QuadruplePattern {
 			}
 		}
 
+		/**
+		 * Create one of
+		 *  - [[PatternG_PO]], [[PatternG_P_]]; or
+		 *  - [[PatternG__O]], [[PatternG___]].
+		 *
+		 * Depending on `p == Some[NamedResource]` or `p == None`
+		 */
 		private def createWildcardSubjectG(
 					graph: NamedResource,
 					p: Option[NamedResource],
@@ -150,6 +179,13 @@ object QuadruplePattern {
 			}
 		}
 
+		/**
+		 * Create one of
+		 *  - [[Pattern_SPO]], [[Pattern_SP_]]; or
+		 *  - [[Pattern_S_O]], [[Pattern_S__]].
+		 *
+		 * Depending on `p == Some[NamedResource]` or `p == None`
+		 */
 		private def createFixedSubject_(
 					subject: Resource,
 					p: Option[NamedResource],
@@ -162,6 +198,13 @@ object QuadruplePattern {
 			}
 		}
 
+		/**
+		 * Create one of
+		 *  - [[Pattern__PO]], [[Pattern__P_]]; or
+		 *  - [[Pattern___O]], [[Pattern____]].
+		 *
+		 * Depending on `p == Some[NamedResource]` or `p == None`
+		 */
 		private def createWildcardSubject_(
 					p: Option[NamedResource],
 					o: Option[Value]) : Pattern = {
@@ -316,7 +359,7 @@ object QuadruplePattern {
 	 * contain a `predicate` —[[FixedPredicate]]— or
 	 * match any `predicate` —[[WildcardPredicate]]—.
 	 */
-	trait FixedPredicate extends Pattern {
+	sealed trait FixedPredicate extends Pattern {
 		val actualPredicate: NamedResource;
 		override def predicate = Some(actualPredicate);
 	}
@@ -331,7 +374,7 @@ object QuadruplePattern {
 	 * contain a `predicate` —[[FixedPredicate]]— or
 	 * match any `predicate` —[[WildcardPredicate]]—.
 	 */
-	trait WildcardPredicate extends Pattern {
+	sealed trait WildcardPredicate extends Pattern {
 		override def predicate = None;
 	}
 
@@ -340,7 +383,7 @@ object QuadruplePattern {
 	 * contain a `rdfObject` —[[FixedRdfObject]]— or
 	 * match any `rdfObject` —[[WildcardRdfObject]]—.
 	 */
-	trait FixedRdfObject extends Pattern {
+	sealed trait FixedRdfObject extends Pattern {
 		val actualRdfObject: Value;
 		override def rdfObject = Some(actualRdfObject);
 	}
@@ -355,7 +398,7 @@ object QuadruplePattern {
 	 * contain a `rdfObject` —[[FixedRdfObject]]— or
 	 * match any `rdfObject` —[[WildcardRdfObject]]—.
 	 */
-	trait WildcardRdfObject extends Pattern {
+	sealed trait WildcardRdfObject extends Pattern {
 		override def rdfObject = None;
 	}
 
