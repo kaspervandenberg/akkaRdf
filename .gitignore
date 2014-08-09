@@ -1,0 +1,9 @@
+# Let git ignore the files created by the scala build tool (sbt)
+project/target
+target
+
+# Let git ignore the binar created by vim:
+# 	* binary index of spelling additions (is build from *.UTF8.add-file)
+*.UTF8.add.spl
+# 	* Swap files for active buffers
+.*.swp
