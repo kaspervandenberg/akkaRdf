@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.11.1"
 
-scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.7")
+scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.7", "-feature")
 
 autoAPIMappings := true
 
