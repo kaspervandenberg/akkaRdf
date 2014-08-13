@@ -2,7 +2,9 @@ name := "akkaRdf"
 
 version := "1.0"
 
-scalaVersion := "2.11.1"
+val scalaVsn = "2.11.2"
+
+scalaVersion := scalaVsn
 
 scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.7", "-feature")
 
@@ -12,7 +14,7 @@ resolvers += "Gamlor-Repo" at "https://github.com/gamlerhart/gamlor-mvn/raw/mast
 
 val akkaVersion = "2.3.4"
 
-val scalaVsn = "2.11.1"
+libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.2"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.4"
 
@@ -26,7 +28,7 @@ apiMappings ++= {
   val links = Seq(
     findManagedDependency("org.scala-lang", "scala-library").map(d => d -> url(s"http://www.scala-lang.org/api/$scalaVsn/")),
     findManagedDependency("com.typesafe.akka", "akka-actor").map(d => d -> url(s"http://doc.akka.io/api/akka/$akkaVersion/")),
-		findManagedDependency("com.typesafe", "config").map(d => d -> url("http://typesafehub.github.io/config/latest/api/")) //,
+	findManagedDependency("com.typesafe", "config").map(d => d -> url("http://typesafehub.github.io/config/latest/api/")) //,
 /*
 		findManagedDependency("com.fasterxml.jackson.core", "jackson-core").map(d => d -> url("http://fasterxml.github.io/jackson-core/javadoc/2.3.1/")),
     findManagedDependency("io.spray", "spray-http").map(d => d -> url("http://spray.io/documentation/1.1-SNAPSHOT/api/")),
