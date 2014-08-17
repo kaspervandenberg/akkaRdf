@@ -203,7 +203,7 @@ import java.util.NoSuchElementException;
  * Using the DSL to model the examples from 
  * [[http://www.w3.org/TR/rdf11-primer/ RDF 1.1 Primer]] §3.5. Leads to a 
  * simpeler and easier to understand model compared to the syntax of [[Rdf]].
- * To recapitulatei, the following image depicts the graph <img 
+ * To recapitulate, the following image depicts the graph <img 
  *  src="http://www.w3.org/TR/2014/NOTE-rdf11-primer-20140225/example-graph.jpg" 
  *  />
  * Modelling it in the DSL:
