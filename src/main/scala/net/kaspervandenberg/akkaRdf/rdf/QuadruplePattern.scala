@@ -413,6 +413,20 @@ object QuadruplePattern {
 			with FixedPredicate
 			with FixedRdfObject;
 
+	object PatternGSPO
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternGSPO =
+			PatternGSPO(
+					quadruple.graph,
+					quadruple.subject,
+					quadruple.predicate,
+					quadruple.rdfObject)
+	}
+
+
 	case class PatternGSP_(
 		actualGraph: NamedResource,
 		actualSubject: Resource,
@@ -422,6 +436,19 @@ object QuadruplePattern {
 			with FixedSubject
 			with FixedPredicate
 			with WildcardRdfObject;
+
+	object PatternGSP_
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternGSP_ =
+			PatternGSP_(
+					quadruple.graph,
+					quadruple.subject,
+					quadruple.predicate)
+	}
+
 
 	case class PatternGS_O(
 		actualGraph: NamedResource,
@@ -433,6 +460,19 @@ object QuadruplePattern {
 			with WildcardPredicate
 			with FixedRdfObject;
 
+	object PatternGS_O
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternGS_O =
+			PatternGS_O(
+					quadruple.graph,
+					quadruple.subject,
+					quadruple.rdfObject)
+	}
+
+
 	case class PatternGS__(
 		actualGraph: NamedResource,
 		actualSubject: Resource)
@@ -441,6 +481,18 @@ object QuadruplePattern {
 			with FixedSubject
 			with WildcardPredicate
 			with WildcardRdfObject;
+
+	object PatternGS__
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternGS__ =
+			PatternGS__(
+					quadruple.graph,
+					quadruple.subject)
+	}
+
 
 	case class PatternG_PO(
 		actualGraph: NamedResource,
@@ -452,6 +504,19 @@ object QuadruplePattern {
 			with FixedPredicate
 			with FixedRdfObject;
 
+	object PatternG_PO
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternG_PO =
+			PatternG_PO(
+					quadruple.graph,
+					quadruple.predicate,
+					quadruple.rdfObject)
+	}
+
+
 	case class PatternG_P_(
 		actualGraph: NamedResource,
 		actualPredicate: NamedResource)
@@ -460,6 +525,18 @@ object QuadruplePattern {
 			with WildcardSubject
 			with FixedPredicate
 			with WildcardRdfObject;
+
+	object PatternG_P_
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternG_P_ =
+			PatternG_P_(
+					quadruple.graph,
+					quadruple.predicate)
+	}
+
 
 	case class PatternG__O(
 		actualGraph: NamedResource,
@@ -470,6 +547,18 @@ object QuadruplePattern {
 			with WildcardPredicate
 			with FixedRdfObject;
 
+	object PatternG__O
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternG__O =
+			PatternG__O(
+					quadruple.graph,
+					quadruple.rdfObject)
+	}
+
+
 	case class PatternG___(
 		actualGraph: NamedResource)
 	extends Pattern
@@ -477,6 +566,17 @@ object QuadruplePattern {
 			with WildcardSubject
 			with WildcardPredicate
 			with WildcardRdfObject;
+
+	object PatternG___
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): PatternG___ =
+			PatternG___(
+					quadruple.graph)
+	}
+
 
 	case class Pattern_SPO(
 		actualSubject: Resource,
@@ -488,6 +588,19 @@ object QuadruplePattern {
 			with FixedPredicate
 			with FixedRdfObject;
 
+	object Pattern_SPO
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern_SPO =
+			Pattern_SPO(
+					quadruple.subject,
+					quadruple.predicate,
+					quadruple.rdfObject)
+	}
+
+
 	case class Pattern_SP_(
 		actualSubject: Resource,
 		actualPredicate: NamedResource)
@@ -496,6 +609,18 @@ object QuadruplePattern {
 			with FixedSubject
 			with FixedPredicate
 			with WildcardRdfObject;
+
+	object Pattern_SP_
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern_SP_ =
+			Pattern_SP_(
+					quadruple.subject,
+					quadruple.predicate)
+	}
+
 
 	case class Pattern_S_O(
 		actualSubject: Resource,
@@ -506,6 +631,18 @@ object QuadruplePattern {
 			with WildcardPredicate
 			with FixedRdfObject;
 
+	object Pattern_S_O
+	{
+		/**
+		 * Create a Pattern from a Quadruple
+		 */
+		def apply(quadruple: Quadruple): Pattern_S_O =
+			Pattern_S_O(
+					quadruple.subject,
+					quadruple.rdfObject)
+	}
+
+
 	case class Pattern_S__(
 		actualSubject: Resource)
 	extends Pattern
@@ -513,6 +650,17 @@ object QuadruplePattern {
 			with FixedSubject
 			with WildcardPredicate
 			with WildcardRdfObject;
+
+	object Pattern_S__
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern_S__ =
+			Pattern_S__(
+					quadruple.subject)
+	}
+
 
 	case class Pattern__PO(
 		actualPredicate: NamedResource,
@@ -523,6 +671,18 @@ object QuadruplePattern {
 			with FixedPredicate
 			with FixedRdfObject;
 
+	object Pattern__PO
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern__PO =
+			Pattern__PO(
+					quadruple.predicate,
+					quadruple.rdfObject)
+	}
+
+
 	case class Pattern__P_(
 		actualPredicate: NamedResource)
 	extends Pattern
@@ -530,6 +690,17 @@ object QuadruplePattern {
 			with WildcardSubject
 			with FixedPredicate
 			with WildcardRdfObject;
+
+	object Pattern__P_
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern__P_ =
+			Pattern__P_(
+					quadruple.predicate)
+	}
+
 
 	case class Pattern___O(
 		actualRdfObject: Value)
@@ -539,12 +710,30 @@ object QuadruplePattern {
 			with WildcardPredicate
 			with FixedRdfObject;
 
+	object Pattern___O
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern___O =
+			Pattern___O(
+					quadruple.rdfObject)
+	}
+
+
 	case object Pattern____
 	extends Pattern
 			with WildcardGraph
 			with WildcardSubject
 			with WildcardPredicate
-			with WildcardRdfObject;
+			with WildcardRdfObject
+	{
+		/**
+		 * Create a [[Pattern]] from a [[Quadruple]]
+		 */
+		def apply(quadruple: Quadruple): Pattern____.type =
+			Pattern____
+	}
 
 
 }
