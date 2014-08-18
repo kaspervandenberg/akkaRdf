@@ -20,13 +20,46 @@ import scala.collection.Set
  * containing a
  * [[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern QuadruplePattern]].
  *
- * 
  * <img src="../../../../../classes/icons/photographicMemory.png" alt="This 
  * Actor's Memomic icon: a photo camera and a brain, i.e. an actor that 
  * remembers everything it sees." />
  *
- * @tparam	A	the type of
+ * = Example interactions =
+ * == Starting Akka ==
+ * To play with the `RdfStore_InMemory`-actor, we need the following objects in 
+ * Akka:
+ *  1. the [[akka.actor.ActorSystem AkkaSystem]], which contains the actor(s);
+ *  1. an [[akka.actor.Inbox Inbox]], with which we can receive messages from
+ *     the actors; and
+ *  1. the `RdfStore_InMemory`-actor.
+ *
+ * We will use the [[akka.actor.ActorDSL ActorDSL]] to simplify using akka; 
+ * this leads to the following REPL code:
+ * {{{
+ * scala> import akka.actor.ActorDSL._
+ * scala> import akka.actor.ActorSystem
+ * scala> import net.kaspervandenberg.akkaRdf.actor.RdfStore_InMemory
+ * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
+ * scala> implicit val system = ActorSystem("demoActorSystem")
+ * scala> implicit val mailbox = inbox()
+ * scala> val rdfStorerBySubject = actor("rdfStorer"){
+ *      |                          new RdfStore_InMemory(PatternGS__.apply)}
+ * }}}
+ *
+ * To stop your REPL session use:
+ * {{{
+ * scala> system.shutdown
+ * }}}
+ *
+ * @tparam A	the type of
  * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
+ *			that this Actor uses to store
+ *			[[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple Quadruples]].
+ * @param patternCreator	function that transforms `Quadruple`s into the
+ *			`Pattern` of type `A`.  This can be the `apply()`-function from the 
+ *			target pattern (`A`), for eample
+ *			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.PatternGS__ PatternGS__.apply]].
+ *
  */
 class RdfStore_InMemory[A <: Pattern](
 		patternCreator: (Quadruple) => A)
