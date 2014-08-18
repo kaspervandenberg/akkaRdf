@@ -20,11 +20,105 @@ import scala.collection.Set
  * containing a
  * [[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern QuadruplePattern]].
  *
- * 
  * <img src="../../../../../classes/icons/photographicMemory.png" alt="This 
  * Actor's Memomic icon: a photo camera and a brain, i.e. an actor that 
  * remembers everything it sees." />
  *
+ * =Examples=
+ * ==Start Akka==
+ * {{{
+ * scala> import akka.actor.ActorSystem
+ * scala> import akka.actor.ActorDSL._
+ * scala> import net.kaspervandenberg.akkaRdf.actor.RdfStore_InMemory
+ * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
+ * scala> scala> implicit val system = ActorSystem("demoSystem")
+ * scala> implicit val mailbox = inbox()
+ * scala> val rdfStorer = actor("rdfStorerGS__"){ new RdfStore_InMemory(PatternGS__.apply) }
+ * }}}
+ *
+ * ==Stop Akka==
+ * {{{
+ * scala> system.shutdown
+ * }}}
+ *
+ * ==Load triples==
+ * Use the example from [[net.kaspervandenberg.akkaRdf.rdf.DSL]] to define some 
+ * triples.  The example below is slightly altered so that it contains
+ * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.NamedResource Rdf.NamedResource]]s 
+ * for the graph and the subject 'bob':
+ * {{{
+ * scala> import net.kaspervandenberg.akkaRdf.rdf.DSL
+ * scala> import net.kaspervandenberg.akkaRdf.rdf.Rdf
+ * scala> object dslDemo extends DSL {
+ *      | definePrefix('ex) := "http://example.org/"
+ *      | definePrefix('rdf) := "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ *      | definePrefix('foaf) := "http://xml.ns.com/foaf/0.1/"
+ *      | definePrefix('xsd) := "http://www.w3.org/2001/XMLSchema#"
+ *      | definePrefix('wikiData) := "http://www.wikidata.org/wiki/"
+ *      | definePrefix('auxRdf) := "http://example.org/rdf/"
+ *      |
+ *      | val work = 'wikiData :: "Property:P800"
+ *      | val isBornOn = 'wikiData :: "Property:P569"
+ *      | val monaLisa = 'wikiData :: "Q12418"
+ *      | val leonardoDaVinci = 'wikiData :: "Q762"
+ *      |
+ *      | val graphBobInfo = 'ex :: "bobInfo"
+ *      | val subjBob = 'ex :: "bob"
+ *      |
+ *      | object graph1 extends Graph(graphBobInfo) {
+ *      |   addTriple(subjBob ==> 'foaf :: "knows" ==> 'ex :: "alice")
+ *      |   addTriple(subjBob ==> 'rdf :: "type" ==> 'foaf :: "Person")
+ *      |   addTriple(subjBob ==> isBornOn ==>
+ *      |             Rdf.Literal("1990-07-24", 'xsd ::"date"))
+ *      |   addTriple(subjBob ==> 'auxRdf :: "isIntrestedIn" ==> monaLisa)
+ *      | }
+ *      |
+ *      | object graph2 extends Graph('wikiData :: "Special:EntityData/Q12418") {
+ *      |   addTriple(leonardoDaVinci ==> work ==> monaLisa)
+ *      |   addTriple('ex :: "videoLaJoconde&#x00C0;Washington" ==>
+ *      |             'auxRdf :: "about" ==> monaLisa)
+ *      | }
+ *      | }
+ * }}}
+ *
+ * Having defined the graph, we can use the following to retrieve some triples:
+ * {{{
+ * scala> val singleTriple = dslDemo.graph1().head
+ * scala> val setOfTriples = dslDemo.graph1()
+ * }}}
+ *
+ * ==Interact with `rdfStorer`==
+ * Define a pattern to query for any triple in the graph `"bobInfo"` having the 
+ * subject `"bob"`:
+ * {{{
+ * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
+ * scala> import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
+ * scala>
+ * scala> val bobQueryPattern = PatternGS__(dslDemo.graphBobInfo, dslDemo.subjBob)
+ * }}}
+ *
+ * Upon creation `rdfStorer` does not 'know' any triples. Sending a
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryRef QueryRef]]
+ * results in no reply:
+ * {{{
+ * scala> rdfStorer ! QueryRef(bobQueryPattern)
+ * scala> mailbox.receive()
+ * }}}
+ * Causes a `java.util.concurrent.TimeoutException`.
+ *
+ * Sending a
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryIf QueryIf]]
+ * results in a reply with
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Failure Failure]]:
+ * {{{
+ * scala> rdfStorer ! QueryIf(bobQueryPattern)
+ * scala> mailbox.receive()
+ * }}}
+ * Results in:
+ * {{{
+ * res6: Any = Failure(PatternGS__(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob)))
+ * }}}
+ * 
  * @tparam	A	the type of
  * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
  */
