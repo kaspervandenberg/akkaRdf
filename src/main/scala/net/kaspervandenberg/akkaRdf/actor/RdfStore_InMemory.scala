@@ -59,8 +59,8 @@ import scala.collection.Set
  *      | definePrefix('wikiData) := "http://www.wikidata.org/wiki/"
  *      | definePrefix('auxRdf) := "http://example.org/rdf/"
  *      |
- *      | val work = 'wikiData :: "Property:P800"
- *      | val isBornOn = 'wikiData :: "Property:P569"
+ *      | val work = 'wikiData :: "Property%3AP800"
+ *      | val isBornOn = 'wikiData :: "Property%3AP569"
  *      | val monaLisa = 'wikiData :: "Q12418"
  *      | val leonardoDaVinci = 'wikiData :: "Q762"
  *      |
@@ -75,7 +75,7 @@ import scala.collection.Set
  *      |   addTriple(subjBob ==> 'auxRdf :: "isIntrestedIn" ==> monaLisa)
  *      | }
  *      |
- *      | object graph2 extends Graph('wikiData :: "Special:EntityData/Q12418") {
+ *      | object graph2 extends Graph('wikiData :: "Special%3AEntityData/Q12418") {
  *      |   addTriple(leonardoDaVinci ==> work ==> monaLisa)
  *      |   addTriple('ex :: "videoLaJoconde&#x00C0;Washington" ==>
  *      |             'auxRdf :: "about" ==> monaLisa)
@@ -130,13 +130,39 @@ import scala.collection.Set
  * Results in a single reply with an `Inform` in the mailbox:
  * {{{
  * scala> mailbox.receive()
- * res4: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(Property:P569),Literal(1990-07-24,NamedResource(http://www.w3.org/2001/date))))
+ * res6: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.wikidata.org/wiki/Property%3AP569),Literal(1990-07-24,NamedResource(http://www.w3.org/2001/date))))
  * }}}
  * Issueing an other`mailbox.receive()` after it results in a 
  * `TimeoutException`.
  *
  * Informing the `RdfStore_InMemory actor multiple time with the same triple 
  * results and then querying it results only in a single reply.
+ *
+ * Informing the `rdfStorer` with all triples from `setOfTriples` and then 
+ * querying:
+ * {{{
+ * scala> setOfTriples.foreach { rdfStorer ! Inform(_) }
+ * scala> rdfStorer ! QueryRef(bobQueryPattern)
+ * }}}
+ * results in 4 `Inform` replies one for each `quadruple` matching `( bobInfo, 
+ * bob, _, _):
+ * {{{
+ * scala> mailbox.receive()
+ * res9: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.wikidata.org/wiki/Property%3AP569),Literal(1990-07-24,NamedResource(http://www.w3.org/2001/date))))
+ * 
+ * scala> mailbox.receive()
+ * res10: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.w3.org/1999/02/type),NamedResource(http://xml.ns.com/foaf/0.1/Person)))
+ * 
+ * scala> mailbox.receive()
+ * res11: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://example.org/rdf/isIntrestedIn),NamedResource(http://www.wikidata.org/wiki/Q12418)))
+ * 
+ * scala> mailbox.receive()
+ * res12: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://xml.ns.com/foaf/0.1/knows),NamedResource(http://example.org/alice)))
+ * 
+ * scala> mailbox.receive()
+ * java.util.concurrent.TimeoutException: deadline passed
+ * }}}
+ *
  * 
  * @tparam	A	the type of
  * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
