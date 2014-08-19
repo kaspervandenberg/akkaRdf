@@ -416,7 +416,8 @@ object QuadruplePattern {
 	object PatternGSPO
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternGSPO =
 			PatternGSPO(
@@ -440,7 +441,8 @@ object QuadruplePattern {
 	object PatternGSP_
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternGSP_ =
 			PatternGSP_(
@@ -463,7 +465,8 @@ object QuadruplePattern {
 	object PatternGS_O
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternGS_O =
 			PatternGS_O(
@@ -485,7 +488,8 @@ object QuadruplePattern {
 	object PatternGS__
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternGS__ =
 			PatternGS__(
@@ -507,7 +511,8 @@ object QuadruplePattern {
 	object PatternG_PO
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternG_PO =
 			PatternG_PO(
@@ -529,7 +534,8 @@ object QuadruplePattern {
 	object PatternG_P_
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternG_P_ =
 			PatternG_P_(
@@ -550,7 +556,8 @@ object QuadruplePattern {
 	object PatternG__O
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternG__O =
 			PatternG__O(
@@ -570,7 +577,8 @@ object QuadruplePattern {
 	object PatternG___
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): PatternG___ =
 			PatternG___(
@@ -591,7 +599,8 @@ object QuadruplePattern {
 	object Pattern_SPO
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern_SPO =
 			Pattern_SPO(
@@ -613,7 +622,8 @@ object QuadruplePattern {
 	object Pattern_SP_
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern_SP_ =
 			Pattern_SP_(
@@ -634,7 +644,8 @@ object QuadruplePattern {
 	object Pattern_S_O
 	{
 		/**
-		 * Create a Pattern from a Quadruple
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern_S_O =
 			Pattern_S_O(
@@ -654,7 +665,8 @@ object QuadruplePattern {
 	object Pattern_S__
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern_S__ =
 			Pattern_S__(
@@ -674,7 +686,8 @@ object QuadruplePattern {
 	object Pattern__PO
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern__PO =
 			Pattern__PO(
@@ -694,7 +707,8 @@ object QuadruplePattern {
 	object Pattern__P_
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern__P_ =
 			Pattern__P_(
@@ -713,7 +727,8 @@ object QuadruplePattern {
 	object Pattern___O
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern___O =
 			Pattern___O(
@@ -729,7 +744,8 @@ object QuadruplePattern {
 			with WildcardRdfObject
 	{
 		/**
-		 * Create a [[Pattern]] from a [[Quadruple]]
+		 * Create a [[Pattern]] from a
+		 * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple]]
 		 */
 		def apply(quadruple: Quadruple): Pattern____.type =
 			Pattern____
