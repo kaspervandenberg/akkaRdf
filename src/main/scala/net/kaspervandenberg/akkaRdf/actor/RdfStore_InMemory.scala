@@ -5,7 +5,8 @@ import net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple
 import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
 import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
 
-import akka.actor.Actor
+import akka.actor.ActorDSL
+import akka.actor.ActorDSL._
 import scala.collection.mutable
 import scala.collection.Set
 
@@ -31,7 +32,8 @@ import scala.collection.Set
  * scala> import akka.actor.ActorDSL._
  * scala> import net.kaspervandenberg.akkaRdf.actor.RdfStore_InMemory
  * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
- * scala> scala> implicit val system = ActorSystem("demoSystem")
+ *
+ * scala> implicit val system = ActorSystem("demoSystem")
  * scala> implicit val mailbox = inbox()
  * scala> val rdfStorer = actor("rdfStorerGS__"){ new RdfStore_InMemory(PatternGS__.apply) }
  * }}}
@@ -84,7 +86,7 @@ import scala.collection.Set
  * Having defined the graph, we can use the following to retrieve some triples:
  * {{{
  * scala> val singleTriple = dslDemo.graph1().head
- * scala> val setOfTriples = dslDemo.graph1()
+ * scala> val setOfTriples = dslDemo.graph1() ++ dslDemo.graph2()
  * }}}
  *
  * ==Interact with `rdfStorer`==
@@ -118,13 +120,30 @@ import scala.collection.Set
  * {{{
  * res6: Any = Failure(PatternGS__(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob)))
  * }}}
+ *
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Inform Informing]]
+ * the `rdfStorer` about the `singleTriple` and then querying for it:
+ * {{{
+ * scala> rdfStorer ! Inform(singleTriple)
+ * scala> rdfStorer ! QueryIf(bobQueryPattern)
+ * }}}
+ * Results in a single reply with an `Inform` in the mailbox:
+ * {{{
+ * scala> mailbox.receive()
+ * res4: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(Property:P569),Literal(1990-07-24,NamedResource(http://www.w3.org/2001/date))))
+ * }}}
+ * Issueing an other`mailbox.receive()` after it results in a 
+ * `TimeoutException`.
+ *
+ * Informing the `RdfStore_InMemory actor multiple time with the same triple 
+ * results and then querying it results only in a single reply.
  * 
  * @tparam	A	the type of
  * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
  */
 class RdfStore_InMemory[A <: Pattern](
 		patternCreator: (Quadruple) => A)
-extends Actor
+extends ActorDSL.Act
 {
 	private val quadrupleMap: mutable.Map[A, mutable.Set[Quadruple]] =
 				mutable.Map.empty;
@@ -166,3 +185,5 @@ extends Actor
 	private def reportUnfoundPattern(pattern: A): Unit =
 			sender ! Failure(pattern)
 }
+
+// vim: set tabstop=4 shiftwidth=4 fo=twacq2 autoindent spl=en_gb spell :
