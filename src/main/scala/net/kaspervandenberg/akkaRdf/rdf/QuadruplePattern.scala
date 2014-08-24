@@ -97,6 +97,25 @@ object QuadruplePattern {
 				}
 			}
 
+		val creationFunctions: Map[Class[_ <: Pattern], Quadruple => Pattern] =
+				Map(
+					classOf [PatternGSPO] -> PatternGSPO.apply,
+					classOf [PatternGSP_] -> PatternGSP_.apply,
+					classOf [PatternGS_O] -> PatternGS_O.apply,
+					classOf [PatternGS__] -> PatternGS__.apply,
+					classOf [PatternG_PO] -> PatternG_PO.apply,
+					classOf [PatternG_P_] -> PatternG_P_.apply,
+					classOf [PatternG__O] -> PatternG__O.apply,
+					classOf [PatternG___] -> PatternG___.apply,
+					classOf [Pattern_SPO] -> Pattern_SPO.apply,
+					classOf [Pattern_SP_] -> Pattern_SP_.apply,
+					classOf [Pattern_S_O] -> Pattern_S_O.apply,
+					classOf [Pattern_S__] -> Pattern_S__.apply,
+					classOf [Pattern__PO] -> Pattern__PO.apply,
+					classOf [Pattern__P_] -> Pattern__P_.apply,
+					classOf [Pattern___O] -> Pattern___O.apply,
+					Pattern____.getClass  -> Pattern____.apply)
+
 		/**
 		 * Create one of
 		 *  - [[PatternGSPO]], [[PatternGSP_]], [[PatternGS_O]],
