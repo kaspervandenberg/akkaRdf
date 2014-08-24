@@ -23,7 +23,8 @@ import scala.collection.Set
  *
  * <img src="../../../../../classes/icons/photographicMemory.png" alt="This 
  * Actor's Memomic icon: a photo camera and a brain, i.e. an actor that 
- * remembers everything it sees." />
+ * remembers everything it sees." /> This actor has eidetic memory: it 
+ * remembers everything you tell it.
  *
  * =Examples=
  * ==Start Akka==
