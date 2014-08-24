@@ -121,3 +121,6 @@ object Rdf {
 
 	case class Literal(value: String, valueType: NamedResource) extends Value
 }
+
+/* vim:set shiftwidth=4 tabstop=4 autoindent fo=cqtwa2 : */ 
+

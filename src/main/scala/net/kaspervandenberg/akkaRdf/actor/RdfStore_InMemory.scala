@@ -212,4 +212,5 @@ extends ActorDSL.Act
 			sender ! Failure(pattern)
 }
 
-// vim: set tabstop=4 shiftwidth=4 fo=twacq2 autoindent spl=en_gb spell :
+/* vim:set shiftwidth=4 tabstop=4 autoindent fo=cqtwa2 : */ 
+
