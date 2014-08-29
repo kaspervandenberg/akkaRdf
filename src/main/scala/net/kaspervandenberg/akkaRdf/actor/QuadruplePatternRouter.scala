@@ -36,7 +36,6 @@ import scala.collection.Map
  * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
  *
  * scala> implicit val system = ActorSystem("demoSystem")
- * scala> implicit val mailbox = inbox()
  * scala> val routes = QuadruplePatternRouter.createRoutesForEachPattern {
  *      |     case  (pat, f) => actor(
  *      |         s"storer_${pat.getSimpleName}") {
@@ -101,6 +100,19 @@ import scala.collection.Map
  * }}}
  *
  * ==Interact with `patternRouter`==
+ * To demonstrate the `QuadruplePatternRouter` define an actor that will 
+ * interact with `patternRouter`:
+ * {{{
+ * scala> import akka.actor.DSL._
+ * scala> import akka.actor.ActorRef
+ * scala> import net.kaspervandenberg.akkaRdf.rdf.Rdf._
+ * scala> import net.kaspervandenberg.messages.fipa.Performatives._
+ *
+ * scala> case class AskTo(
+ *      |				actor: ActorRef,
+ *      |				question: Message[_])
+ * }}}
+ *
  * Define a pattern to query for any triple in the graph `"bobInfo"` having the 
  * subject `"bob"`:
  * {{{
