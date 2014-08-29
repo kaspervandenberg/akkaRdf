@@ -313,3 +313,6 @@ object Performatives {
 	 */
 	case class QueryRef[+T](override val content: T) extends Message[T](content);
 }
+
+/* vim:set shiftwidth=4 tabstop=4 autoindent fo=cqtwa2 : */ 
+

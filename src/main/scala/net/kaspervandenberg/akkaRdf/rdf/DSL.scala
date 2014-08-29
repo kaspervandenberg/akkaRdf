@@ -218,8 +218,8 @@ import java.util.NoSuchElementException;
  *      | definePrefix('wikiData) := "http://www.wikidata.org/wiki/"
  *      | definePrefix('auxRdf) := "http://example.org/rdf/"
  *      |
- *      | val work = 'wikiData :: "Property:P800"
- *      | val isBornOn = 'wikiData :: "Property:P569"
+ *      | val work = 'wikiData :: "Property%3AP800"
+ *      | val isBornOn = 'wikiData :: "Property%3AP569"
  *      | val monaLisa = 'wikiData :: "Q12418"
  *      | val leonardoDaVinci = 'wikiData :: "Q762"
  *      |
@@ -231,7 +231,7 @@ import java.util.NoSuchElementException;
  *      |   addTriple('ex :: "bob" ==> 'auxRdf :: "isIntrestedIn" ==> monaLisa)
  *      | }
  *      |
- *      | object graph2 extends Graph('wikiData :: "Special:EntityData/Q12418") {
+ *      | object graph2 extends Graph('wikiData :: "Special%3AEntityData/Q12418") {
  *      |   addTriple(leonardoDaVinci ==> work ==> monaLisa)
  *      |   addTriple('ex :: "videoLaJoconde&#x00C0;Washington" ==>
  *      |             'auxRdf :: "about" ==> monaLisa)
@@ -512,4 +512,7 @@ class DSL {
 
 }
 
+
+
+/* vim:set shiftwidth=4 tabstop=4 autoindent fo=cqtwa2 : */ 
 
