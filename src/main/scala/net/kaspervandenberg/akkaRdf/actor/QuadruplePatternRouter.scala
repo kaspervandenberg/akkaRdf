@@ -20,9 +20,10 @@ import scala.collection.Map
  * to the child actor for the given
  * [[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern]].
  *
- * The QuadruplePatternRouter` is like a river delta: the messages flow in at 
- * one end and then branch through the delta until they end up at the correct 
- * actor downstream.
+ * <img src="../../../../../classes/icons/flowingRiverDelta.png" alt="This 
+ * Actor's Memomic icon: a river delta." /> The `QuadruplePatternRouter` is 
+ * like a river delta: the messages flow in at one end and then branch through 
+ * the delta until they end up at the correct actor downstream.
  *
  * =Examples=
  * ==Start Akka==
@@ -38,7 +39,7 @@ import scala.collection.Map
  * scala> implicit val system = ActorSystem("demoSystem")
  * scala> val routes = QuadruplePatternRouter.createRoutesForEachPattern {
  *      |     case  (pat, f) => actor(
- *      |         s"storer_${pat.getSimpleName}") {
+ *      |         "storer_" + pat.getSimpleName) {
  *      |         new RdfStore_InMemory(f) }
  *      | }
  * scala> val patternRouter = actor ("patternRouter") { new QuadruplePatternRouter(routes) }
@@ -116,13 +117,13 @@ import scala.collection.Map
  * scala> val demoActor = actor(new Actor{
  *      |   override def receive = {
  *      |     case AskTo(target, question) => {
- *      |       println(s"Asking ${question} to actor ${target}")
+ *      |       println("Asking " + question + " to actor " + target)
  *      |       target.tell(question, self)
  *      |     }
  *      |     case Inform(content) =>
- *      |       println(s"Received Inform-message containing ${content} from ${sender()}")
+ *      |       println("Received Inform-message containing " + content + " from " + sender())
  *      |     case x: Any =>
- *      |       println(s"Received unknown message ${x} of type ${x.getClass}.")
+ *      |       println("Received unknown message " + x + " of type " + x.getClass)
  *      |   }
  *      | })
  * }}}
@@ -136,8 +137,9 @@ import scala.collection.Map
  * scala> val bobQueryPattern = PatternGS__(dslDemo.graphBobInfo, dslDemo.subjBob)
  * }}}
  *
- * The `QuadruplePatternRouter` forwards the [[Inform]] messages to all actors 
- * on its routes:
+ * The `QuadruplePatternRouter` forwards the 
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Inform Inform]] 
+ * messages to all actors on its routes:
  * {{{
  * scala> setOfTriples.foreach { patternRouter ! Inform(_) }
  * scala> demoActor ! AskTo(patternRouter, QueryRef(bobQueryPattern))
@@ -151,8 +153,9 @@ import scala.collection.Map
  * Received Inform-message containing Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://xml.ns.com/foaf/0.1/knows),NamedResource(http://example.org/alice)) from Actor[akka://demoSystem/user/storer_PatternGS__#1651964514]
  * }}}
  *
- * @param routes	the [[Pattern]]-subclasses mapped to the [[Actor]]s to
- * 			forward messages to.
+ * @param routes	the 
+ * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
+ *			mapped to the [[akka.actor.Actor Actor]]s to forward messages to.
  *
  *			`routes` containing an actor for every type of pattern can be 
  *			created as follows.  Assuming that the actor is generic and that 
@@ -170,7 +173,7 @@ import scala.collection.Map
  *			scala>
  *			scala> val routes = QuadruplePatternRouter.createRoutesForEachPattern {
  * 			     |     case  (pat, f) => actor(
- * 			     |         s"storer_${pat.getSimpleName}") {
+ * 			     |         "storer_" + pat.getSimpleName) {
  * 			     |         new RdfStore_InMemory(f) }
  * 			     | }
  *			scala> val routes = Pattern.creationFunctions.mapValues (
