@@ -103,14 +103,28 @@ import scala.collection.Map
  * To demonstrate the `QuadruplePatternRouter` define an actor that will 
  * interact with `patternRouter`:
  * {{{
- * scala> import akka.actor.DSL._
+ * scala> import akka.actor.ActorDSL._
+ * scala> import akka.actor.Actor
  * scala> import akka.actor.ActorRef
  * scala> import net.kaspervandenberg.akkaRdf.rdf.Rdf._
- * scala> import net.kaspervandenberg.messages.fipa.Performatives._
+ * scala> import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
  *
  * scala> case class AskTo(
- *      |				actor: ActorRef,
- *      |				question: Message[_])
+ *      |   target: ActorRef,
+ *      |   question: Message[_])
+ *
+ * scala> val demoActor = actor(new Actor{
+ *      |   override def receive = {
+ *      |     case AskTo(target, question) => {
+ *      |       println(s"Asking ${question} to actor ${target}")
+ *      |       target.tell(question, self)
+ *      |     }
+ *      |     case Inform(content) =>
+ *      |       println(s"Received Inform-message containing ${content} from ${sender()}")
+ *      |     case x: Any =>
+ *      |       println(s"Received unknown message ${x} of type ${x.getClass}.")
+ *      |   }
+ *      | })
  * }}}
  *
  * Define a pattern to query for any triple in the graph `"bobInfo"` having the 
@@ -126,29 +140,16 @@ import scala.collection.Map
  * on its routes:
  * {{{
  * scala> setOfTriples.foreach { patternRouter ! Inform(_) }
- * scala> patternRouter ! QueryRef(bobQueryPattern)
+ * scala> demoActor ! AskTo(patternRouter, QueryRef(bobQueryPattern))
  * }}}
  * results in 4 `Inform` replies one for each `quadruple` matching `( bobInfo, 
- * bob, _, _); note that the inform messages come from …:
+ * bob, _, _); note that the inform messages come from `storer_PatternGS__`:
  * {{{
- * scala> mailbox.receive()
- * res9: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.wikidata.org/wiki/Property%3AP569),Literal(1990-07-24,NamedResource(http://www.w3.org/2001/date))))
- * 
- * scala> mailbox.receive()
- * res10: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.w3.org/1999/02/type),NamedResource(http://xml.ns.com/foaf/0.1/Person)))
- * 
- * scala> mailbox.receive()
- * res11: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://example.org/rdf/isIntrestedIn),NamedResource(http://www.wikidata.org/wiki/Q12418)))
- * 
- * scala> mailbox.receive()
- * res12: Any = Inform(Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://xml.ns.com/foaf/0.1/knows),NamedResource(http://example.org/alice)))
- * 
- * scala> mailbox.receive()
- * java.util.concurrent.TimeoutException: deadline passed
+ * Received Inform-message containing Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.wikidata.org/wiki/Property%3AP569),Literal(1990-07-24,NamedResource(http://www.w3.org/2001/date))) from Actor[akka://demoSystem/user/storer_PatternGS__#1651964514]
+ * Received Inform-message containing Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://www.w3.org/1999/02/type),NamedResource(http://xml.ns.com/foaf/0.1/Person)) from Actor[akka://demoSystem/user/storer_PatternGS__#1651964514]
+ * Received Inform-message containing Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://example.org/rdf/isIntrestedIn),NamedResource(http://www.wikidata.org/wiki/Q12418)) from Actor[akka://demoSystem/user/storer_PatternGS__#1651964514]
+ * Received Inform-message containing Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://xml.ns.com/foaf/0.1/knows),NamedResource(http://example.org/alice)) from Actor[akka://demoSystem/user/storer_PatternGS__#1651964514]
  * }}}
- * TODO: Show that the sender is the `PatternGS__ storer` and not 
- * `patternRouter` 
- * 
  *
  * @param routes	the [[Pattern]]-subclasses mapped to the [[Actor]]s to
  * 			forward messages to.
