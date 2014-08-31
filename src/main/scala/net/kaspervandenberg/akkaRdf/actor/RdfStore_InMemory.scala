@@ -175,6 +175,8 @@ import scala.collection.Set
  * java.util.concurrent.TimeoutException: deadline passed
  * }}}
  *
+ * Querying for a pattern of a different type causes an class cast exception.
+ *
  * 
  * @tparam	A	the type of
  * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
@@ -196,8 +198,8 @@ extends ActorDSL.Act
 	override def receive =
 	{
 		case Inform(quadruple: Quadruple) => store(quadruple)
-		case QueryRef(pattern: A)	=> retrieve(pattern)
-		case QueryIf(pattern: A)	=> retrieve(pattern, reportUnfoundPattern)
+		case QueryRef(pattern)	=> retrieve(pattern.asInstanceOf[A])
+		case QueryIf(pattern)	=> retrieve(pattern.asInstanceOf[A], reportUnfoundPattern)
 
 		case Failure(_)				=> ()
 		case _unknown				=> sender ! Failure(_unknown)
