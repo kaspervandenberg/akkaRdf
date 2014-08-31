@@ -111,6 +111,7 @@ import scala.collection.Set
  * scala> val bobQueryPattern = PatternGS__(dslDemo.graphBobInfo, dslDemo.subjBob)
  * }}}
  *
+ * ===Querying empty storer===
  * Upon creation `rdfStorer` does not 'know' any triples. Sending a
  * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryRef QueryRef]]
  * results in no reply:
@@ -133,6 +134,7 @@ import scala.collection.Set
  * res6: Any = Failure(PatternGS__(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob)))
  * }}}
  *
+ * ===Storing a single triple===
  * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Inform Informing]]
  * the `rdfStorer` about the `singleTriple` and then querying for it:
  * {{{
@@ -150,6 +152,7 @@ import scala.collection.Set
  * Informing the `RdfStore_InMemory actor multiple time with the same triple 
  * results and then querying it results only in a single reply.
  *
+ * ===Storing and querying a set of triples===
  * Informing the `rdfStorer` with all triples from `setOfTriples` and then 
  * querying:
  * {{{
@@ -175,6 +178,27 @@ import scala.collection.Set
  * java.util.concurrent.TimeoutException: deadline passed
  * }}}
  *
+ *
+ * ===Querying for all stored Patterns===
+ * Querying for the `classOf` of the stored pattern type results in replies for 
+ * each key in the `RdfStorer`:
+ * {{{
+ * scala> setOfTriples.foreach { rdfStorer ! Inform(_) } // just to make sure, if you skipped ahead
+ * scala> rdfStorer ! QueryRef(classOf[PatternGS__)
+ * }}}
+ * results in 3 `Inform` messages:
+ * {{{
+ * scala> mailbox.receive()
+ * res10: Any = Inform(PatternGS__(NamedResource(http://www.wikidata.org/wiki/Special%3AEntityData/Q12418),NamedResource(http://example.org/videoLaJoconde&#x00C0;Washington)))
+ *
+ * scala> mailbox.receive()
+ * res11: Any = Inform(PatternGS__(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob)))
+ *
+ * scala> mailbox.receive()
+ * res12: Any = Inform(PatternGS__(NamedResource(http://www.wikidata.org/wiki/Special%3AEntityData/Q12418),NamedResource(http://www.wikidata.org/wiki/Q762)))
+ * }}}
+ *
+ * ===Breaking Rdf storer===
  * Querying for a pattern of a different type causes an class cast exception.
  *
  * 
@@ -198,8 +222,13 @@ extends ActorDSL.Act
 	override def receive =
 	{
 		case Inform(quadruple: Quadruple) => store(quadruple)
-		case QueryRef(pattern)	=> retrieve(pattern.asInstanceOf[A])
-		case QueryIf(pattern)	=> retrieve(pattern.asInstanceOf[A], reportUnfoundPattern)
+		case QueryRef(cls: Class[A]) => retrieveKeys
+		case QueryRef(pattern) if pattern.isInstanceOf[Pattern] => 
+				retrieve(pattern.asInstanceOf[A])
+		case QueryIf(pattern)		=>
+				retrieve(
+						pattern.asInstanceOf[A],
+						reportUnfoundPattern)
 
 		case Failure(_)				=> ()
 		case _unknown				=> sender ! Failure(_unknown)
@@ -225,6 +254,14 @@ extends ActorDSL.Act
 		quadrupleMap.andThen(informAll).applyOrElse(
 				pattern,
 				onFailure.andThen(Set.empty))
+	}
+
+	def retrieveKeys =
+	{
+		def informSingle(pattern: A): Unit =
+			sender ! Inform(pattern)
+
+		quadrupleMap.keys.foreach(informSingle)
 	}
 
 	private def ignoreUnfoundPattern(pattern: A): Unit = ()

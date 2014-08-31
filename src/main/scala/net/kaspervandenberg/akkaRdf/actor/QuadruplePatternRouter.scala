@@ -191,6 +191,8 @@ extends ActorDSL.Act {
 			routes(msg.getClass) forward QueryIf(msg)
 		case QueryRef(msg: Pattern) if routes.isDefinedAt(msg.getClass) =>
 			routes(msg.getClass) forward QueryRef(msg)
+		case QueryRef(cls: Class[Pattern]) if routes.isDefinedAt(cls) =>
+			routes(cls) forward QueryRef(cls)
 
 		case Failure(_)				=> ()
 		case _unknown				=> sender ! Failure(_unknown)
