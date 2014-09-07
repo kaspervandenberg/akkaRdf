@@ -153,6 +153,52 @@ import scala.collection.Map
  * Received Inform-message containing Quadruple(NamedResource(http://example.org/bobInfo),NamedResource(http://example.org/bob),NamedResource(http://xml.ns.com/foaf/0.1/knows),NamedResource(http://example.org/alice)) from Actor[akka://demoSystem/user/storer_PatternGS__#1651964514]
  * }}}
  *
+ * ====Browsing the stored graph====
+ * Browsing the graph requires some effort.  For example, lets find all graphs 
+ * and then all subjects in one of them (e.g. in the Mona Lisa graph at 
+ * http://www.wikidata.org).
+ *
+ * Retrieving all graphs (using an `inbox`):
+ * {{{
+ * scala> import scala.concurrent.duration._
+ * scala> implicit var mailbox = inbox()
+ * scala> patternRouter ! QueryRef(classOf[PatternG___])
+ * scala> var response1 = mailbox.receive()
+ * scala> var response2 = mailbox.receive()
+ * scala> mailbox.receive(100.millis) // Expecting a timeout
+ * }}}
+ * results in:
+ * {{{
+ * response1: Any = Inform(PatternG___(NamedResource(http://www.wikidata.org/wiki/Special%3AEntityData/Q12418)))
+ * response2: Any = Inform(PatternG___(NamedResource(http://example.org/bobInfo)))
+ * }}}
+ *
+ * Then we use one of the returned patterns to find the subjects in one of the  
+ * graphs (the response containing the Mona Lisa-graph):
+ * {{{
+ * scala> var graphPattern = response1 match { case Inform(x) => x }
+ * }}}
+ * Define a temporary actor to store the response to the `graphPattern-query:
+ * {{{
+ * scala> var tmpSubjectStorer = actor("tmpSubjectStorer"){ new RdfStore_InMemory(PatternGS__.apply) }
+ * scala> patternRouter.tell(QueryRef(graphPattern), tmpSubjectStorer)
+ * }}}
+ * Now `tmpSubjectStorer` contains the Mona Lisa graph grouped by subject.  
+ * Query it for its subjects:
+ * {{{
+ * scala> demoActor ! AskTo( tmpSubjectStorer, QueryRef(classOf[PatternGS__]))
+ * }}}
+ * This results in:
+ * {{{
+ * Asking QueryRef(class net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern$PatternGS__) to actor Actor[akka://demoSystem/user/tmpSubjectStorer#198881255]
+ * Received Inform-message containing PatternGS__(NamedResource(http://www.wikidata.org/wiki/Special%3AEntityData/Q12418),NamedResource(http://example.org/videoLaJoconde&#x00C0;Washington)) from Actor[akka://demoSystem/user/tmpSubjectStorer#198881255]
+ * Received Inform-message containing PatternGS__(NamedResource(http://www.wikidata.org/wiki/Special%3AEntityData/Q12418),NamedResource(http://www.wikidata.org/wiki/Q762)) from Actor[akka://demoSystem/user/tmpSubjectStorer#198881255]
+ * }}}
+ * There are the two subjects as stored in the Mona Lisa-graph before.
+ *
+ * TODO: These kind of browse queries result in transmitting lots of triples 
+ * between actors;
+ *
  * @param routes	the 
  * 			[[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern.Pattern Pattern]]
  *			mapped to the [[akka.actor.Actor Actor]]s to forward messages to.
