@@ -3,7 +3,7 @@ package net.kaspervandenberg.akkaRdf.actor
 
 import net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple
 import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
-import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
+import net.kaspervandenberg.akkaRdf.messages.fipa._
 
 import akka.actor.ActorDSL
 import akka.actor.ActorDSL._
@@ -221,17 +221,23 @@ extends ActorDSL.Act
 
 	override def receive =
 	{
-		case Inform(quadruple: Quadruple) => store(quadruple)
-		case QueryRef(cls: Class[A]) => retrieveKeys
-		case QueryRef(pattern) if pattern.isInstanceOf[Pattern] => 
-				retrieve(pattern.asInstanceOf[A])
-		case QueryIf(pattern)		=>
-				retrieve(
+		case Inform(quadruple: Quadruple)
+			=> store(quadruple)
+		case QueryRef(cls: Class[A])
+			=> retrieveKeys
+		case QueryRef(pattern) if pattern.isInstanceOf[Pattern]
+			=> retrieve(pattern.asInstanceOf[A])
+		case QueryIf(pattern)
+			=> 	retrieve(
 						pattern.asInstanceOf[A],
 						reportUnfoundPattern)
 
-		case Failure(_)				=> ()
-		case _unknown				=> sender ! Failure(_unknown)
+		case NotUnderstood(performative)
+			=> throw NotUnderstoodException(
+					sender(),
+					performative)
+		case _unknown
+			=> sender !  NotUnderstood(_unknown)
 	}
 
 	def store(quadruple: Quadruple) =

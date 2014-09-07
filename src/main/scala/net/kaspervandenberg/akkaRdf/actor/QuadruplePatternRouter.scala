@@ -3,7 +3,7 @@ package net.kaspervandenberg.akkaRdf.actor
 
 import net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple
 import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
-import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
+import net.kaspervandenberg.akkaRdf.messages.fipa._
 
 import akka.actor.Actor
 import akka.actor.ActorRef
@@ -231,17 +231,21 @@ class QuadruplePatternRouter(
 		routes: Map[Class[_ <: Pattern], ActorRef])
 extends ActorDSL.Act {
 	override def receive = {
-		case Inform(content: Quadruple) =>
-			routes.values.foreach { _  forward Inform(content) }
-		case QueryIf(msg: Pattern) if routes.isDefinedAt(msg.getClass) =>
-			routes(msg.getClass) forward QueryIf(msg)
-		case QueryRef(msg: Pattern) if routes.isDefinedAt(msg.getClass) =>
-			routes(msg.getClass) forward QueryRef(msg)
-		case QueryRef(cls: Class[Pattern]) if routes.isDefinedAt(cls) =>
-			routes(cls) forward QueryRef(cls)
+		case Inform(content: Quadruple)
+			=> routes.values.foreach { _  forward Inform(content) }
+		case QueryIf(msg: Pattern) if routes.isDefinedAt(msg.getClass)
+			=> routes(msg.getClass) forward QueryIf(msg)
+		case QueryRef(msg: Pattern) if routes.isDefinedAt(msg.getClass)
+			=> routes(msg.getClass) forward QueryRef(msg)
+		case QueryRef(cls: Class[Pattern]) if routes.isDefinedAt(cls)
+			=> routes(cls) forward QueryRef(cls)
 
-		case Failure(_)				=> ()
-		case _unknown				=> sender ! Failure(_unknown)
+		case NotUnderstood(performative)
+			=> throw new NotUnderstoodException(
+				sender(),
+				performative)
+		case _unknown
+			=> sender ! NotUnderstood(_unknown)
 	}
 }
 
