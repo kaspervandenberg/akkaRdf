@@ -233,6 +233,8 @@ extends ActorDSL.Act {
 	override def receive = {
 		case Inform(content: Quadruple)
 			=> routes.values.foreach { _  forward Inform(content) }
+		case Disconfirm(content: Quadruple)
+			=> routes.values.foreach { _ forward Disconfirm(content) }
 		case QueryIf(msg: Pattern) if routes.isDefinedAt(msg.getClass)
 			=> routes(msg.getClass) forward QueryIf(msg)
 		case QueryRef(msg: Pattern) if routes.isDefinedAt(msg.getClass)

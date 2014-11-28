@@ -1,3 +1,5 @@
+organization := "net.kaspervandenberg.apps"
+
 name := "akkaRdf"
 
 version := "1.0"
@@ -9,6 +11,8 @@ scalaVersion := scalaVsn
 scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.7", "-feature")
 
 autoAPIMappings := true
+
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
 resolvers += "Gamlor-Repo" at "https://github.com/gamlerhart/gamlor-mvn/raw/master/snapshots"
 
