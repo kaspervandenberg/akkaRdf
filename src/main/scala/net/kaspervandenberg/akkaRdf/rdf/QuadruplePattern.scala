@@ -63,6 +63,28 @@ import net.kaspervandenberg.akkaRdf.rdf.Rdf._;
  * "interested in" something, and the thing the video "La Joconde a Washington" 
  * is about.
  */
+/*
+object QuadPattern2 {
+	class Pattern[G, S, P, O] {
+		 def graph: Option[NamedResource];
+		 def subject: Option[Resource];
+		 def predicate: Option[NamedResource];
+		 def rdfObject: Option[Value];
+	}
+
+	trait Undefined;
+
+	trait Fixed[+T](item: T) {
+		def item: Option[T] { return Some(item); }
+	};
+
+
+	trait Wildcard[+T] {
+		def item: Option[T] { return None; }
+	}
+}
+*/
+
 object QuadruplePattern {
 	/**
 	 * Base of the 16 quadruple patterns.
