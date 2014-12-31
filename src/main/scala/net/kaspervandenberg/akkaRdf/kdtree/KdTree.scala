@@ -30,20 +30,17 @@ import scala.math.Ordering;
  * Define a [[net.kaspervandenberg.akkaRdf.kdtree.DimensionList]] containing 
  * all dimensions of `Point3D`. There are two alternatives, either directly use 
  * [[scala.math.Ordering]]: {{{
- * scala> val pointDimensions = new EmptyDimensionList[Point3D]().
- *      | addDimension( Ordering.by[Point3D, Int](p => p.z)).
- *      | addDimension( Ordering.by[Point3D, Int](p => p.y)).
- *      | addDimension( Ordering.by[Point3D, Int](p => p.x))
+ * scala> val xdim = Ordering.by[Point3D, Int](p => p.z)
+ * scala> val ydim = Ordering.by[Point3D, Int](p => p.y)
+ * scala> val zdim = Ordering.by[Point3D, Int](p => p.x)
+ * scala> val pointDimensions = DimensionList(xdim :: ydim :: zdim :: Nil)
  * }}}
  * or use [[net.kaspervandenberg.akkaRdf.kdtree.DotOutput.NamedDimension]] 
  * which can output Graphviz Dot edges: {{{
- * scala> val pointDimensions = new EmptyDimensionList[Point3D]().
- *      | addDimension( new NamedDimension[Point3D, Int](
- *      | "\uD835\uDC67", p => p.z)) .
- *      | addDimension( new NamedDimension[Point3D, Int](
- *      | "\uD835\uDC66", p => p.y)) .
- *      | addDimension( new NamedDimension[Point3D, Int](
- *      | "\uD835\uDC65", p => p.x))
+ * scala> val xdim = new NamedDimension[Point3D, Int]("\uD835\uDC65", p => p.x) 
+ * scala> val ydim = new NamedDimension[Point3D, Int]("\uD835\uDC66", p => p.y)
+ * scala> val zdim = new NamedDimension[Point3D, Int]("\uD835\uDC67", p => p.z)
+ * scala> val pointDimensions = DimensionList(xdim :: ydim :: zdim :: Nil)
  * }}}
  * Use `pointDimensions` to create an 
  * [[net.kaspervandenberg.akkaRdf.kdtree.EmptyKDTree]]: {{{
@@ -66,8 +63,9 @@ import scala.math.Ordering;
  * ImageMagic), you can display a picture of the tree: {{{
  * scala> import scala.sys.process._
  * scala> import net.kaspervandenberg.akkaRdf.kdtree.DotOutput._
- * scala> val output = DotOutput.toDotOutputting(t2).toDotString
- * scala> val proc = s"echo $output" #| "dot -T png" #| "display"
+ * scala> val output = DotOutput.toDotGraph("G", t2)
+ * scala> val is = new java.io.ByteArrayInputStream(output.getBytes)
+ * scala> val proc = "dot -T png" #| "display" #< is
  * scala> proc.!
  * }}}
  */
@@ -116,6 +114,8 @@ class DimensionList[T, S <: DimensionList.Dimensionality[T]]
 
 	def rotate(): DimensionList[T, S] =
 		new DimensionList(d.tail :+ d.head)(ev)
+
+	def createEmptyTree(): EmptyKDTree[T, S] = new EmptyKDTree[T, S](this)
 
 	override def compare(x: T, y: T): Int = d.head.compare(x, y)
 }
