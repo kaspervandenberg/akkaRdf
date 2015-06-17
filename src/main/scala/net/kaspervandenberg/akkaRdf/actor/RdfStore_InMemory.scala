@@ -13,11 +13,11 @@ import scala.collection.Set
 /**
  * Actor that stores all
  * [[net.kaspervandenberg.akkaRdf.rdf.Rdf.Quadruple Quadruples]]^^(that it is 
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Inform Informed]] 
- * about)^^ and replies with a series of `Inform`-messages on 
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryRef QueryRef]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Inform Informed]] about)^^ and 
+ * replies with a series of `Inform`-messages on 
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.QueryRef QueryRef]]
  * and
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryIf QueryIf]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.QueryIf QueryIf]]
  * containing a
  * [[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern QuadruplePattern]].
  *
@@ -106,14 +106,14 @@ import scala.collection.Set
  * subject `"bob"`:
  * {{{
  * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
- * scala> import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
+ * scala> import net.kaspervandenberg.akkaRdf.messages.fipa._
  * scala>
  * scala> val bobQueryPattern = PatternGS__(dslDemo.graphBobInfo, dslDemo.subjBob)
  * }}}
  *
  * ===Querying empty storer===
  * Upon creation `rdfStorer` does not 'know' any triples. Sending a
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryRef QueryRef]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.QueryRef QueryRef]]
  * results in no reply:
  * {{{
  * scala> rdfStorer ! QueryRef(bobQueryPattern)
@@ -122,9 +122,9 @@ import scala.collection.Set
  * Causes a `java.util.concurrent.TimeoutException`.
  *
  * Sending a
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryIf QueryIf]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.QueryIf QueryIf]]
  * results in a reply with
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Failure Failure]]:
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Failure Failure]]:
  * {{{
  * scala> rdfStorer ! QueryIf(bobQueryPattern)
  * scala> mailbox.receive()
@@ -135,7 +135,7 @@ import scala.collection.Set
  * }}}
  *
  * ===Storing a single triple===
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Inform Informing]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Inform Informing]]
  * the `rdfStorer` about the `singleTriple` and then querying for it:
  * {{{
  * scala> rdfStorer ! Inform(singleTriple)

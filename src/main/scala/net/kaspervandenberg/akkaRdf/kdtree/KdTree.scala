@@ -2,94 +2,87 @@
 package net.kaspervandenberg.akkaRdf.kdtree
 
 import scala.collection.immutable.List;
-import scala.math.Ordering;
+import scala.math.PartialOrdering;
 
 /**
- * A 𝑘-dimensional tree: store <var>A</var>-nodes organised in
- * 𝑘-dimensions.
+ * Organise `T`-objects in 𝑘-dimensions. Base class for
+ *  - [[net.kaspervandenberg.akkaRdf.kdtree.EmptyKDTree]]; and
+ *  - [[net.kaspervandenberg.akkaRdf.kdtree.KDTreeNode]].
  *
- * The tree is implemented as a binary tree that alternates the dimensions 
- * [[scala.math.Ordering]]s.   See
- * [[http://en.wikipedia.org/wiki/K-d_tree k-d-tree at Wikipedia]] for a more 
- * detailed description.
+ * @tparam	T	type of elements this `KDTree` contains
+ * @tparam	N the dimensions that this `KDTree` spans; a `KDTree`that organises
+ *		T`-objects into 2 dimensions is of a different type than one that 
+ *		organises `T`-objects into 3 dimensions.
  *
- * <p><a href="http://commons.wikimedia.org/wiki/File:3dtree.png#mediaviewer/File:3dtree.png"><img alt="3dtree.png" width=25% src="http://upload.wikimedia.org/wikipedia/commons/b/b6/3dtree.png"></a><br>"<a href="http://commons.wikimedia.org/wiki/File:3dtree.png#mediaviewer/File:3dtree.png">3dtree</a>". Licensed under <a title="GNU General Public License" href="http://www.gnu.org/licenses/gpl.html">GPL</a> via <a href="//commons.wikimedia.org/wiki/">Wikimedia Commons</a>.</p>
- *
- *
- * @example We can organise a set of points in 3d-space in a 
- * [[net.kaspervandenberg.akkaRdf.kdtree.KDTree]].
- * Import the namespace: {{{
- * scala> import net.kaspervandenberg.akkaRdf.kdtree._
- * }}}
- * If you like to view the tree's in Graphviz Dot format, then import: {{{
- * scala> import net.kaspervandenberg.akkaRdf.kdtree.DotOutput._
- * }}}
- * Simple class for holding the points: {{{
- * scala> case class Point3D(name: String, x: Int, y: Int, z: Int)
- * }}}
- * Define a [[net.kaspervandenberg.akkaRdf.kdtree.DimensionList]] containing 
- * all dimensions of `Point3D`. There are two alternatives, either directly use 
- * [[scala.math.Ordering]]: {{{
- * scala> val xdim = Ordering.by[Point3D, Int](p => p.z)
- * scala> val ydim = Ordering.by[Point3D, Int](p => p.y)
- * scala> val zdim = Ordering.by[Point3D, Int](p => p.x)
- * scala> val pointDimensions = DimensionList(xdim :: ydim :: zdim :: Nil)
- * }}}
- * or use [[net.kaspervandenberg.akkaRdf.kdtree.DotOutput.NamedDimension]] 
- * which can output Graphviz Dot edges: {{{
- * scala> val xdim = new NamedDimension[Point3D, Int]("\uD835\uDC65", p => p.x) 
- * scala> val ydim = new NamedDimension[Point3D, Int]("\uD835\uDC66", p => p.y)
- * scala> val zdim = new NamedDimension[Point3D, Int]("\uD835\uDC67", p => p.z)
- * scala> val pointDimensions = DimensionList(xdim :: ydim :: zdim :: Nil)
- * }}}
- * Use `pointDimensions` to create an 
- * [[net.kaspervandenberg.akkaRdf.kdtree.EmptyKDTree]]: {{{
- * scala> val emptyTree = pointDimensions.createEmptyTree
- * }}}
- * Add some random points to the tree: {{{
- * scala> val rng = new scala.util.Random()
- * scala> def createRandomPoint(name: String): Point3D =
- *      | Point3D(name, rng.nextInt(10), rng.nextInt(10), rng.nextInt(10))
- * scala> val t2 = emptyTree.
- *      | add( createRandomPoint("p1") ).
- *      | add( createRandomPoint("p2") ).
- *      | add( createRandomPoint("p3") ).
- *      | add( createRandomPoint("p4") ).
- *      | add( createRandomPoint("p5") ).
- *      | add( createRandomPoint("p6") ).
- *      | add( createRandomPoint("p7") )
- * }}}
- * If you have dot and display installed (from respectively Graphviz and 
- * ImageMagic), you can display a picture of the tree: {{{
- * scala> import scala.sys.process._
- * scala> import net.kaspervandenberg.akkaRdf.kdtree.DotOutput._
- * scala> val output = DotOutput.toDotGraph("G", t2)
- * scala> val is = new java.io.ByteArrayInputStream(output.getBytes)
- * scala> val proc = "dot -T png" #| "display" #< is
- * scala> proc.!
- * }}}
+ * @constructor	''(abstract)'' initialises the dimensions of this `KDTree`.
+ *	Create `KDTree`s via [[net.kaspervandenberg.akkaRdf.kdtree.DimensionList]].
+ * @param	dimensions	List of [[scala.math.PartialOrdering]]s that this
+ *		`KDTree` uses to organise the `T`-objects that it contains.
  */
-abstract class KDTree[T, N <: DimensionList.Dimensionality[T]](
+sealed abstract class KDTree[T, N <: DimensionList.Dimensionality[T]](
 		dimensions: DimensionList[T, N])
+		extends Traversable[T]
 {
+	/**
+	 * Returns a `KDTree` that contains `newValue` and all `T`-objects that `this 
+	 * KDTree` contains.  Inserts `newValue` at the correct location.  `This 
+	 * KDTree` is not modified, instead a new tree is returned.  All unmodified 
+	 * nodes from `this KDTree` are shared with the returned `KDTree`.
+	 *
+	 * @param newValue	element to add to `this KDTree`
+	 * @return a [[net.kaspervandenberg.akkaRdf.kdtree.KDTree]] with `newValue`
+	 */
 	def add(newValue: T): KDTree[T, N];
 
-	def dimension(): Ordering[T] = dimensions.currentDimension;
+	/**
+	 * Returns the dimension ([[scala.math.PartialOrdering]]) that this `KDTree` uses to 
+	 * separate `T`-objects firstly.
+	 *
+	 * @return	the top level [[scala.math.PartialOrdering]]
+	 */
+	def dimension(): PartialOrdering[T] = dimensions.currentDimension;
 }
 
 
+/**
+ * Placeholder `KDTree` without any value of subnodes.  Use the `add()`-method 
+ * to insert values into this tree.  Recommended: use 
+ * [[net.kaspervandenberg.akkaRdf.kdtree.DimensionList]]::`createEmptyTree()` 
+ * to construct `EmptyKDTree`s.
+ *
+ * @constructor	Constructs an empty `KDTree` having `dimensions`.
+ * @param	dimensions	List of [[scala.math.PartialOrdering]]s that this
+ * 		`KDTree` uses to organise the `T`-objects it contains.
+ */
 case class EmptyKDTree[T, N <: DimensionList.Dimensionality[T]]
 		(dimensions: DimensionList[T, N])
 		extends KDTree[T, N](dimensions)
 {
+	/**
+	 * Returns a `KDTree`-that contains `newValue`.  The returned `KDTree` has 
+	 * the same `dimensions` as this `EmptyKDTree`.
+	 */
 	override def add(newValue: T): KDTreeNode[T, N] =
 		new KDTreeNode[T, N](dimensions, newValue,
 			new EmptyKDTree[T, N](dimensions.rotate),
 			new EmptyKDTree[T, N](dimensions.rotate))
+
+	/**
+	 * No-opp, function `f` is not called.
+	 */
+	override def foreach[U](f: T ⇒ U) = ()
 }
 
 
 
+/**
+ * Node of a `KDTree` containing a `T`-object, `value`, and a left- and right- 
+ * sub-`KDTree`.  `T`-objects are organised according to 
+ * `dimensions.currentDimension` (see 
+ * [[net.kaspervandenberg.akkaRdf.kdtree.DimensionList]]): the `left` subtree 
+ * contains `T`-objects ≤ `value`, the right subtree contains `T`-objects 
+ * >`value` and not comparable with `value`.
+ */
 case class KDTreeNode[T, N <: DimensionList.Dimensionality[T]](
 		dimensions: DimensionList[T, N],
 		val value: T,
@@ -97,32 +90,42 @@ case class KDTreeNode[T, N <: DimensionList.Dimensionality[T]](
 		val right: KDTree[T, N])
 	extends KDTree[T, N](dimensions)
 {
-	def add(newValue: T): KDTree[T, N] =
-		dimensions.tryCompare(newValue, value) match {
-			case Some(r) if r <=0 =>
-				new KDTreeNode(dimensions, value, left.add(newValue), right)
-			case _ =>
-				new KDTreeNode(dimensions, value, left, right.add(newValue))
-		}
+	override def add(newValue: T): KDTreeNode[T, N] =
+		if(dimensions.lteq(newValue, value))
+			new KDTreeNode(dimensions, value, left.add(newValue), right)
+		else
+			new KDTreeNode(dimensions, value, left, right.add(newValue))
+
+	/**
+	 * Call `f` for each `T`-object in this `KDTreeNode`.  `foreach` visits the 
+	 * `T`-objects depth-first infix.
+	 */
+	override def foreach[U](f: T ⇒ U) =
+	{
+		left foreach f;
+		f(value);
+		right foreach f;
+	}
 }
 
 class DimensionList[T, S <: DimensionList.Dimensionality[T]]
-		(d: List[Ordering[T]])(implicit ev: S)
-		extends Ordering[T]
+		(d: List[PartialOrdering[T]])(implicit ev: S)
+		extends PartialOrdering[T]
 {
-	def currentDimension(): Ordering[T] = d.head
+	def currentDimension(): PartialOrdering[T] = d.head
 
 	def rotate(): DimensionList[T, S] =
 		new DimensionList(d.tail :+ d.head)(ev)
 
 	def createEmptyTree(): EmptyKDTree[T, S] = new EmptyKDTree[T, S](this)
 
-	override def compare(x: T, y: T): Int = d.head.compare(x, y)
+	override def lteq(x: T, y: T): Boolean = d.head.lteq(x, y)
+	override def tryCompare(x: T, y: T): Option[Int] = d.head.tryCompare(x, y)
 }
 
 object DimensionList
 {
-	def apply[T](d: List[Ordering[T]]) =
+	def apply[T](d: List[PartialOrdering[T]]) =
 		new DimensionList(d)(getDimensionality(d))
 
 	trait Dimensionality[T]
@@ -131,7 +134,7 @@ object DimensionList
 			(implicit ev: S)
 			extends Dimensionality[T]
 
-	def getDimensionality[T](d: List[Ordering[T]]):
+	def getDimensionality[T](d: List[PartialOrdering[T]]):
 			Dimensionality[T] = d match {
 		case h :: tail =>
 			new RecursiveDimesionallity()(getDimensionality(tail))
@@ -140,75 +143,5 @@ object DimensionList
 	}
 }
 
+/* vim:set fo=cqtwa2 textwidth=80 shiftwidth=2 tabstop=2 :*/
 
-object DotOutput {
-
-trait DotOutputing {
-	def toDotString() : String;
-	def getDotNode(): String;
-}
-
-case class NamedDimension[T, S]
-		(val name: String, val f: T => S)
-		(implicit ord: Ordering[S])
-	extends Ordering[T]
-{
-	override def compare(x: T, y: T) = ord.compare(f(x), f(y))
-	def edgeLabel(relation: String, v: T): String =
-		s"$relation ${f(v)} ($name)"
-}
-		
-
-implicit class EmptyKDTreeDotOutputting
-		[T, N <: DimensionList.Dimensionality[T]]
-		(delegate: EmptyKDTree[T, N])
-		extends DotOutputing {
-	override def getDotNode(): String = s"n_${System.identityHashCode(this)}"
-	def toDotString(): String = s"""${this.getDotNode} [label="«empty»"];"""
-}
-
-def toDotGraph[T, N <: DimensionList.Dimensionality[T]]
-		(graphName: String, tree: KDTree[T, N]): String =
-	s"digraph $graphName {\n" +
-	toDotOutputting(tree).toDotString +
-	s"}\n"
-
-def toDotOutputting[T, N <: DimensionList.Dimensionality[T]]
-		(tree: KDTree[T, N])
-		: DotOutputing =
-	tree match {
-		case e: EmptyKDTree[T, N] => new EmptyKDTreeDotOutputting(e);
-		case n: KDTreeNode[T, N] => new KDTreeNodeDotOutputting(n);
-	}
-
-implicit class KDTreeNodeDotOutputting[T, N <: DimensionList.Dimensionality[T]]
-		(delegate: KDTreeNode[T, N])
-		extends DotOutputing
-{
-	override def getDotNode(): String =
-		s"n_${System.identityHashCode(delegate)}"
-
-	def toDotString(): String =
-		s"""\t${toDotOutputting(delegate.left).toDotString}\n""" +
-		s"""\t${toDotOutputting(delegate.right).toDotString}\n""" +
-		s"""\t${this.getDotNode} [label="${delegate.value}"];\n""" +
-		leftEdge() +
-		rightEdge()
-
-	def leftEdge(): String = edge(toDotOutputting(delegate.left), "≤")
-
-	def rightEdge(): String = edge(toDotOutputting(delegate.right), ">, ≠")
-
-
-	def edge(subtree: DotOutputing, relation: String): String = 
-		s"""\t${this.getDotNode} -> ${subtree.getDotNode} """ +
-		s"""[label="${edgeLabel(relation)}"];\n"""
-
-	def edgeLabel(relation: String): String = delegate.dimension match {
-		case n: NamedDimension[_, _] =>
-			n.edgeLabel(relation, delegate.value)
-		case _ => relation
-	}
-}
-
-}

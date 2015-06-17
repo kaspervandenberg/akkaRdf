@@ -14,9 +14,9 @@ import scala.collection.Map
 
 /**
  * Routes
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryIf QueryIf]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.QueryIf QueryIf]]
  * and
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.QueryRef QueryRef]]
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.QueryRef QueryRef]]
  * to the child actor for the given
  * [[net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern]].
  *
@@ -108,7 +108,7 @@ import scala.collection.Map
  * scala> import akka.actor.Actor
  * scala> import akka.actor.ActorRef
  * scala> import net.kaspervandenberg.akkaRdf.rdf.Rdf._
- * scala> import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
+ * scala> import net.kaspervandenberg.akkaRdf.messages.fipa._
  *
  * scala> case class AskTo(
  *      |   target: ActorRef,
@@ -132,14 +132,14 @@ import scala.collection.Map
  * subject `"bob"`:
  * {{{
  * scala> import net.kaspervandenberg.akkaRdf.rdf.QuadruplePattern._
- * scala> import net.kaspervandenberg.akkaRdf.messages.fipa.Performatives._
+ * scala> import net.kaspervandenberg.akkaRdf.messages.fipa._
  * scala>
  * scala> val bobQueryPattern = PatternGS__(dslDemo.graphBobInfo, dslDemo.subjBob)
  * }}}
  *
  * The `QuadruplePatternRouter` forwards the 
- * [[net.kaspervandenberg.akkaRdf.messages.fipa.Performatives.Inform Inform]] 
- * messages to all actors on its routes:
+ * [[net.kaspervandenberg.akkaRdf.messages.fipa.Inform Inform]] messages to all 
+ * actors on its routes:
  * {{{
  * scala> setOfTriples.foreach { patternRouter ! Inform(_) }
  * scala> demoActor ! AskTo(patternRouter, QueryRef(bobQueryPattern))
